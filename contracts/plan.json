@@ -1,0 +1,29 @@
+{
+  "threat_id": "THREAT-001",
+  "candidates": [
+    {
+      "id": "PLAN-1",
+      "type": "raise_orbit",
+      "delta_v_ms": 3.1,
+      "delay_min": 0
+    },
+    {
+      "id": "PLAN-2",
+      "type": "lower_orbit",
+      "delta_v_ms": 2.6,
+      "delay_min": 0
+    },
+    {
+      "id": "PLAN-3",
+      "type": "phase_shift",
+      "delta_v_ms": 2.8,
+      "delay_min": 15
+    },
+    {
+      "id": "PLAN-4",
+      "type": "wait",
+      "delta_v_ms": 0.0,
+      "delay_min": 0
+    }
+  ]
+}

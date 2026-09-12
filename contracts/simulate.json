@@ -1,0 +1,15 @@
+{
+  "plan_id": "PLAN-1",
+  "primary_resolved": true,
+  "secondary_conflicts": [
+    {
+      "object": "SAT-05",
+      "miss_distance_km": 0.31,
+      "risk_score": 0.63
+    }
+  ],
+  "closest_approach_km": 0.31,
+  "feasible": false,
+  "status": "REJECTED",
+  "reason": "Although this plan resolves the original threat, its simulated trajectory creates a new high-risk conjunction with SAT-05."
+}

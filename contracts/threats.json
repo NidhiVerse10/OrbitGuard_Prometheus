@@ -1,0 +1,14 @@
+{
+  "threats": [
+    {
+      "id": "THREAT-001",
+      "primary": "SAT-03",
+      "secondary": "DEB-17",
+      "tca": "2026-09-12T14:32:10Z",
+      "miss_distance_km": 0.42,
+      "relative_velocity_km_s": 7.8,
+      "risk_score": 0.87,
+      "severity": "HIGH"
+    }
+  ]
+}
