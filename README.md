@@ -27,16 +27,16 @@ It's a decision-support prototype — it recommends and verifies, a human approv
 
 ```mermaid
 flowchart LR
-    A[📡 Orbital Data] --> B[Threat Detector]
+    A[ Orbital Data] --> B[Threat Detector]
     B -->|conjunction found| C[Maneuver Planner]
     C -->|3-4 candidate plans| D[Conflict Checker]
     D -->|counterfactual simulation| E[Mission Guardian]
     E -->|criticality-weighted scores| F[Commander]
     F -->|selects best plan| G[Verifier]
     G -->|re-checks selected plan| H{Safe?}
-    H -->|Yes| I[✅ Await Human Approval]
+    H -->|Yes| I[ Await Human Approval]
     H -->|No, retry once| F
-    H -->|Still unsafe| J[⚠️ Escalate to Operator]
+    H -->|Still unsafe| J[ Escalate to Operator]
 
     style A fill:#0d1b2a,stroke:#4cc9f0,color:#fff
     style B fill:#1b263b,stroke:#4cc9f0,color:#fff
@@ -142,10 +142,10 @@ sequenceDiagram
 
 | Plan | Type | Result |
 |---|---|---|
-| **PLAN-1** | raise_orbit | ❌ Rejected — creates a new high-risk conjunction with `SAT-05` (0.30 km, risk 0.94) |
-| **PLAN-2** | lower_orbit | ❌ Rejected — feasible, but loses to PLAN-3 on score |
-| **PLAN-3** | phase_shift | ✅ **Selected** — resolves cleanly, verified SAFE |
-| **PLAN-4** | wait | ❌ Rejected — doesn't resolve the threat within the window |
+| **PLAN-1** | raise_orbit |  Rejected — creates a new high-risk conjunction with `SAT-05` (0.30 km, risk 0.94) |
+| **PLAN-2** | lower_orbit |  Rejected — feasible, but loses to PLAN-3 on score |
+| **PLAN-3** | phase_shift |  **Selected** — resolves cleanly, verified SAFE |
+| **PLAN-4** | wait |  Rejected — doesn't resolve the threat within the window |
 
 This is the exact story narrated live in the demo: *the system tries an idea, catches its own mistake, tries again, and only commits once it's verified safe.*
 
@@ -180,7 +180,7 @@ npm run dev
 
 ##  Guardrails
 
-- This is a **decision-support prototype** for a controlled demo scenario — not a flight-certified or operational space-agency system.
+- This is a **decision-support prototype** for a controlled demo scenario not a flight-certified or operational space-agency system.
 - Orbital data is **synthetic and controlled**, not live classified conjunction data.
 - A **human operator** approves the final maneuver. The system recommends and verifies; it does not autonomously command any spacecraft.
 
