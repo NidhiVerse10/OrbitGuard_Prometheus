@@ -1,0 +1,15 @@
+{
+  "id": "SAT-03",
+  "name": "CommSat-Alpha",
+  "type": "satellite",
+  "criticality": "critical",
+  "orbital_elements": {
+    "semi_major_axis_km": 7050.0,
+    "eccentricity": 0.001,
+    "inclination_deg": 51.6,
+    "raan_deg": 120.4,
+    "arg_perigee_deg": 45.0,
+    "mean_anomaly_deg": 10.2,
+    "epoch": "2026-09-12T10:00:00Z"
+  }
+}

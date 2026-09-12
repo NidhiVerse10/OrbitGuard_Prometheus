@@ -1,0 +1,32 @@
+{
+  "threat_id": "THREAT-001",
+  "selected_plan": "PLAN-3",
+  "scores": {
+    "safety": 0.95,
+    "secondary_conflicts": 0,
+    "delta_v_ms": 2.8,
+    "mission_criticality_weight": 1.0,
+    "total_score": 0.91
+  },
+  "rejected_plans": [
+    {
+      "plan_id": "PLAN-1",
+      "status": "REJECTED",
+      "closest_approach_km": 0.31,
+      "reason": "Creates a new high-risk conjunction with SAT-05"
+    },
+    {
+      "plan_id": "PLAN-2",
+      "status": "REJECTED",
+      "closest_approach_km": 1.40,
+      "reason": "Insufficient miss-distance margin at TCA"
+    }
+  ],
+  "justification": "Phase shift resolves the primary conjunction with zero secondary conflicts at an acceptable fuel cost, and the target is a critical asset so cost is secondary to certainty.",
+  "verification": {
+    "status": "SAFE",
+    "closest_approach_km": 15.4,
+    "replans_used": 0
+  },
+  "requires_human_approval": true
+}

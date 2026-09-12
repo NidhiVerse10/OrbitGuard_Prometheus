@@ -1,1 +1,66 @@
-{"scenario_id":"primary_v1","description":"OrbitGuard primary deterministic demonstration scenario","objects":[]} 
+{
+  "scenario_id": "primary_v1",
+  "description": "Controlled multi-object conjunction scenario for OrbitGuard demonstration",
+  "objects": [
+    {
+      "id": "SAT-03",
+      "name": "CommSat-Alpha",
+      "type": "satellite",
+      "criticality": "critical",
+      "orbital_elements": {
+        "semi_major_axis_km": 7050.0,
+        "eccentricity": 0.001,
+        "inclination_deg": 51.6,
+        "raan_deg": 120.4,
+        "arg_perigee_deg": 45.0,
+        "mean_anomaly_deg": 10.2,
+        "epoch": "2026-09-12T10:00:00Z"
+      }
+    },
+    {
+      "id": "DEB-17",
+      "name": "Debris-17",
+      "type": "debris",
+      "criticality": "low",
+      "orbital_elements": {
+        "semi_major_axis_km": 7050.4,
+        "eccentricity": 0.001,
+        "inclination_deg": 51.6,
+        "raan_deg": 120.4,
+        "arg_perigee_deg": 45.0,
+        "mean_anomaly_deg": 10.0,
+        "epoch": "2026-09-12T10:00:00Z"
+      }
+    },
+    {
+      "id": "SAT-05",
+      "name": "EarthObs-Beta",
+      "type": "satellite",
+      "criticality": "standard",
+      "orbital_elements": {
+        "semi_major_axis_km": 7051.0,
+        "eccentricity": 0.001,
+        "inclination_deg": 51.6,
+        "raan_deg": 120.4,
+        "arg_perigee_deg": 45.0,
+        "mean_anomaly_deg": 10.4,
+        "epoch": "2026-09-12T10:00:00Z"
+      }
+    },
+    {
+      "id": "SAT-07",
+      "name": "NavSat-Gamma",
+      "type": "satellite",
+      "criticality": "standard",
+      "orbital_elements": {
+        "semi_major_axis_km": 7052.0,
+        "eccentricity": 0.001,
+        "inclination_deg": 51.6,
+        "raan_deg": 120.4,
+        "arg_perigee_deg": 45.0,
+        "mean_anomaly_deg": 10.8,
+        "epoch": "2026-09-12T10:00:00Z"
+      }
+    }
+  ]
+}
