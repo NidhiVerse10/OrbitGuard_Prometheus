@@ -1,6 +1,4 @@
 {
-  "scenario_id": "primary_v1",
-  "description": "Controlled multi-object conjunction scenario for OrbitGuard demonstration",
   "objects": [
     {
       "id": "SAT-03",
@@ -19,46 +17,46 @@
     },
     {
       "id": "DEB-17",
-      "name": "Debris-17",
+      "name": "Debris-Fragment-17",
       "type": "debris",
       "criticality": "low",
       "orbital_elements": {
-        "semi_major_axis_km": 7050.4,
+        "semi_major_axis_km": 7049.6,
         "eccentricity": 0.001,
-        "inclination_deg": 51.6,
-        "raan_deg": 120.4,
-        "arg_perigee_deg": 45.0,
-        "mean_anomaly_deg": 10.0,
+        "inclination_deg": 98.2,
+        "raan_deg": 278.6554,
+        "arg_perigee_deg": 121.8435,
+        "mean_anomaly_deg": 181.2635,
         "epoch": "2026-09-12T10:00:00Z"
       }
     },
     {
       "id": "SAT-05",
-      "name": "EarthObs-Beta",
+      "name": "WeatherSat-Beta",
       "type": "satellite",
       "criticality": "standard",
       "orbital_elements": {
-        "semi_major_axis_km": 7051.0,
+        "semi_major_axis_km": 7058.0,
         "eccentricity": 0.001,
-        "inclination_deg": 51.6,
-        "raan_deg": 120.4,
-        "arg_perigee_deg": 45.0,
-        "mean_anomaly_deg": 10.4,
+        "inclination_deg": 90.0,
+        "raan_deg": 256.7039,
+        "arg_perigee_deg": 121.5352,
+        "mean_anomaly_deg": 211.9383,
         "epoch": "2026-09-12T10:00:00Z"
       }
     },
     {
-      "id": "SAT-07",
-      "name": "NavSat-Gamma",
-      "type": "satellite",
-      "criticality": "standard",
+      "id": "DEB-22",
+      "name": "Debris-Fragment-22",
+      "type": "debris",
+      "criticality": "low",
       "orbital_elements": {
-        "semi_major_axis_km": 7052.0,
-        "eccentricity": 0.001,
-        "inclination_deg": 51.6,
-        "raan_deg": 120.4,
-        "arg_perigee_deg": 45.0,
-        "mean_anomaly_deg": 10.8,
+        "semi_major_axis_km": 7200.0,
+        "eccentricity": 0.002,
+        "inclination_deg": 60.0,
+        "raan_deg": 200.0,
+        "arg_perigee_deg": 30.0,
+        "mean_anomaly_deg": 5.0,
         "epoch": "2026-09-12T10:00:00Z"
       }
     }
