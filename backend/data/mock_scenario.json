@@ -1,0 +1,64 @@
+{
+  "objects": [
+    {
+      "id": "SAT-03",
+      "name": "CommSat-Alpha",
+      "type": "satellite",
+      "criticality": "critical",
+      "orbital_elements": {
+        "semi_major_axis_km": 7050.0,
+        "eccentricity": 0.001,
+        "inclination_deg": 51.6,
+        "raan_deg": 120.4,
+        "arg_perigee_deg": 45.0,
+        "mean_anomaly_deg": 10.2,
+        "epoch": "2026-09-12T10:00:00Z"
+      }
+    },
+    {
+      "id": "DEB-17",
+      "name": "Debris-Fragment-17",
+      "type": "debris",
+      "criticality": "low",
+      "orbital_elements": {
+        "semi_major_axis_km": 7049.6,
+        "eccentricity": 0.001,
+        "inclination_deg": 98.2,
+        "raan_deg": 278.6554,
+        "arg_perigee_deg": 121.8435,
+        "mean_anomaly_deg": 181.2635,
+        "epoch": "2026-09-12T10:00:00Z"
+      }
+    },
+    {
+      "id": "SAT-05",
+      "name": "WeatherSat-Beta",
+      "type": "satellite",
+      "criticality": "standard",
+      "orbital_elements": {
+        "semi_major_axis_km": 7058.0,
+        "eccentricity": 0.001,
+        "inclination_deg": 90.0,
+        "raan_deg": 256.7039,
+        "arg_perigee_deg": 121.5352,
+        "mean_anomaly_deg": 211.9383,
+        "epoch": "2026-09-12T10:00:00Z"
+      }
+    },
+    {
+      "id": "DEB-22",
+      "name": "Debris-Fragment-22",
+      "type": "debris",
+      "criticality": "low",
+      "orbital_elements": {
+        "semi_major_axis_km": 7200.0,
+        "eccentricity": 0.002,
+        "inclination_deg": 60.0,
+        "raan_deg": 200.0,
+        "arg_perigee_deg": 30.0,
+        "mean_anomaly_deg": 5.0,
+        "epoch": "2026-09-12T10:00:00Z"
+      }
+    }
+  ]
+}
