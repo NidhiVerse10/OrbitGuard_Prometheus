@@ -20,6 +20,7 @@ from conjunction import detect_threats
 from maneuver import generate_candidates
 from simulator import check_candidate
 from agent_bridge import decide_via_agent_or_fallback
+from scenario_builder import build_scenario_snapshot, build_decide_payload
 
 app = FastAPI(title="OrbitGuard Backend")
 
@@ -64,14 +65,27 @@ def _find_threat(threat_id: str):
     raise HTTPException(status_code=404, detail=f"Threat {threat_id} not found")
 
 
-@app.get("/api/scenario", response_model=ScenarioResponse)
+@app.get("/api/scenario")
 def get_scenario():
-    return ScenarioResponse(objects=_state["objects"])
+    """
+    Returns the composed Scenario payload the frontend's Scenario type
+    (frontend/src/types/orbitguard.ts) requires - threat, assets, and
+    candidateManeuvers included. See scenario_builder.py for why this is
+    no longer the raw ScenarioResponse{objects} shape.
+    """
+    return build_scenario_snapshot(_state["objects"])
 
 
-@app.post("/api/scenario/reset", response_model=ScenarioResponse)
+@app.post("/api/scenario/reset")
 def reset_scenario():
     _load_scenario()
+    return build_scenario_snapshot(_state["objects"])
+
+
+@app.get("/api/scenario/raw", response_model=ScenarioResponse)
+def get_scenario_raw():
+    """Original frozen Section 4.1 contract, kept for anyone/anything still
+    relying on the raw { objects: [...] } shape."""
     return ScenarioResponse(objects=_state["objects"])
 
 
@@ -94,8 +108,23 @@ def post_simulate(request: SimulateRequest):
     return check_candidate(_state["objects"], threat, request.plan_id)
 
 
-@app.post("/api/decide", response_model=DecideResponse)
+@app.post("/api/decide")
 def post_decide(request: DecideRequest):
+    """
+    Returns the composed decision payload frontend/src/services/api.ts's
+    getAutonomousDecision() expects - `selected_plan` as a full ManeuverPlan
+    object, not the plan-id string the frozen DecideResponse (models.py)
+    contract uses internally. See scenario_builder.build_decide_payload().
+    """
+    threat = _find_threat(request.threat_id)
+    decision = decide_via_agent_or_fallback(_state["objects"], threat)
+    return build_decide_payload(_state["objects"], threat, decision)
+
+
+@app.post("/api/decide/raw", response_model=DecideResponse)
+def post_decide_raw(request: DecideRequest):
+    """Original frozen Section 4.5 contract, kept for anyone/anything still
+    relying on the raw selected_plan-as-id shape."""
     threat = _find_threat(request.threat_id)
     return decide_via_agent_or_fallback(_state["objects"], threat)
 
