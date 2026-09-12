@@ -134,6 +134,19 @@ export function useOrbitGuard() {
         );
 
         setSecondaryConflictActive(false);
+
+        /*
+         * IMPORTANT:
+         *
+         * Loading a scenario must NOT start autonomous
+         * evaluation automatically.
+         *
+         * Evaluation starts only when the user invokes
+         * startAutonomousEvaluation().
+         */
+        setIsEvaluating(
+          loadedScenario.isEvaluating ?? false,
+        );
       } catch (error) {
         const message =
           error instanceof Error
@@ -147,20 +160,35 @@ export function useOrbitGuard() {
 
         setApiError(message);
 
+        /*
+         * Backend failure is NOT silently converted
+         * into mock mode.
+         */
         setScenario(initialScenarioState);
 
         setIsMockMode(false);
 
+        setIsEvaluating(false);
+
         setActiveStepIndex(0);
+
         setActiveInspectionPlanId(null);
+
         setOperatorApproved(false);
+
         setVisualizationMode('BEFORE');
+
         setSecondaryConflictActive(false);
       }
     },
     [],
   );
 
+  /*
+   * This only loads the scenario.
+   *
+   * It does NOT call startAutonomousEvaluation().
+   */
   useEffect(() => {
     void loadScenario();
   }, [loadScenario]);
@@ -225,17 +253,22 @@ export function useOrbitGuard() {
       }
 
       setApiError(null);
+
       setIsEvaluating(true);
+
       setActiveStepIndex(0);
+
       setActiveInspectionPlanId(null);
+
       setSecondaryConflictActive(false);
+
       setOperatorApproved(false);
+
       setVisualizationMode('BEFORE');
 
       /*
-       * Start in the threat-detected state.
-       *
-       * Nothing is selected or verified yet.
+       * Reset the scenario into the beginning of
+       * autonomous evaluation.
        */
       setScenario((previous) => ({
         ...previous,
@@ -243,6 +276,8 @@ export function useOrbitGuard() {
         decisionSteps: [],
 
         decision_trace: [],
+
+        selectedPlan: null,
 
         selectedPlanId: null,
 
@@ -256,6 +291,7 @@ export function useOrbitGuard() {
 
         verification: {
           selected_plan: '',
+
           primary_conflict: 'UNRESOLVED',
 
           verification_status: 'EVALUATING',
@@ -284,41 +320,46 @@ export function useOrbitGuard() {
 
       try {
         /*
-         * IMPORTANT:
-         *
-         * This calls the frozen backend contract:
+         * Backend contract:
          *
          * POST /api/decide
          *
          * {
          *   threat_id: threatId
          * }
-         *
-         * The API service maps the backend response:
-         *
-         * selected_plan
-         * scores
-         * rejected_plans
-         * justification
-         * verification
-         * requires_human_approval
          */
         const decisionResponse =
           await OrbitGuardApi.getAutonomousDecision(
             threatId,
           );
 
+        /*
+         * These values come from the actual backend
+         * response through api.ts.
+         */
         const steps =
           decisionResponse.decisionSteps ?? [];
 
+        const selectedPlan =
+          decisionResponse.selected_plan ?? null;
+
         const selectedPlanId =
           decisionResponse.selected_plan_id ??
-          decisionResponse.selected_plan?.id ??
+          selectedPlan?.id ??
           null;
 
+        const rejectedPlans =
+          decisionResponse.rejected_plans ?? [];
+
+        const planScores =
+          decisionResponse.scores;
+
+        const justification =
+          decisionResponse.justification;
+
         /*
-         * A successful backend decision must provide
-         * the frontend trace.
+         * A successful backend decision should contain
+         * an agent trace.
          */
         if (steps.length === 0) {
           throw new Error(
@@ -333,27 +374,6 @@ export function useOrbitGuard() {
         /*
          * Backend selected_plan is authoritative.
          */
-        const selectedPlan =
-          decisionResponse.selected_plan;
-
-        /*
-         * Use backend rejected plans directly.
-         */
-        const rejectedPlans =
-          decisionResponse.rejected_plans ?? [];
-
-        /*
-         * Use backend scores directly.
-         */
-        const planScores =
-          decisionResponse.scores;
-
-        /*
-         * Use backend justification directly.
-         */
-        const justification =
-          decisionResponse.justification;
-
         setScenario((previous) => ({
           ...previous,
 
@@ -361,8 +381,7 @@ export function useOrbitGuard() {
 
           decision_trace: steps,
 
-          selectedPlan:
-            selectedPlan ?? null,
+          selectedPlan,
 
           selectedPlanId,
 
@@ -378,7 +397,9 @@ export function useOrbitGuard() {
               ? {
                   headline:
                     'GEMINI MISSION ASSESSMENT',
+
                   text: justification,
+
                   implication: justification,
                 }
               : null,
@@ -403,10 +424,10 @@ export function useOrbitGuard() {
         }));
 
         /*
-         * The backend decision is already complete.
+         * Backend decision is already complete.
          *
-         * The following timer only animates the trace so the
-         * demo visibly progresses.
+         * The timer only animates the agent trace
+         * for the UI/demo.
          */
 
         let currentStep = 0;
@@ -427,10 +448,6 @@ export function useOrbitGuard() {
               const step =
                 steps[currentStep];
 
-              /*
-               * Some frontend trace steps may carry a planId.
-               * If they do, inspect the corresponding plan.
-               */
               if (step.planId) {
                 setActiveInspectionPlanId(
                   step.planId,
@@ -500,8 +517,7 @@ export function useOrbitGuard() {
 
               decision_trace: steps,
 
-              selectedPlan:
-                selectedPlan ?? null,
+              selectedPlan,
 
               selectedPlanId,
 
@@ -517,8 +533,11 @@ export function useOrbitGuard() {
                   ? {
                       headline:
                         'GEMINI MISSION ASSESSMENT',
+
                       text: justification,
-                      implication: justification,
+
+                      implication:
+                        justification,
                     }
                   : null,
 
@@ -573,8 +592,9 @@ export function useOrbitGuard() {
         setSecondaryConflictActive(false);
 
         /*
-         * Failed backend evaluation must NOT look like
-         * a successful mock evaluation.
+         * Backend failure must remain visible.
+         *
+         * Do NOT convert the failure into mock mode.
          */
         setScenario((previous) => ({
           ...previous,
@@ -597,6 +617,7 @@ export function useOrbitGuard() {
 
           verification: {
             selected_plan: '',
+
             primary_conflict: 'UNRESOLVED',
 
             verification_status: 'EVALUATING',
@@ -664,12 +685,19 @@ export function useOrbitGuard() {
       }
 
       setIsEvaluating(false);
+
       setApiError(null);
+
       setOperatorApproved(false);
+
       setOperatorModalOpen(false);
+
       setSecondaryConflictActive(false);
+
       setVisualizationMode('BEFORE');
+
       setActiveStepIndex(0);
+
       setActiveInspectionPlanId(null);
 
       try {
@@ -680,8 +708,14 @@ export function useOrbitGuard() {
 
         setIsMockMode(response.isMock);
 
+        setIsEvaluating(
+          response.scenario.isEvaluating ??
+            false,
+        );
+
         setActiveStepIndex(
-          response.scenario.activeStepIndex ?? 0,
+          response.scenario.activeStepIndex ??
+            0,
         );
 
         setActiveInspectionPlanId(
@@ -714,13 +748,14 @@ export function useOrbitGuard() {
 
         setApiError(message);
 
-        /*
-         * Keep the UI in a known initial state,
-         * but do NOT label backend failure as mock mode.
-         */
         setScenario(initialScenarioState);
 
+        /*
+         * Backend failure is not mock mode.
+         */
         setIsMockMode(false);
+
+        setIsEvaluating(false);
 
         setActiveStepIndex(0);
 
@@ -750,12 +785,6 @@ export function useOrbitGuard() {
         return;
       }
 
-      /*
-       * Frozen verifier contract uses verification_status.
-       *
-       * `status` is retained only as compatibility
-       * with the existing frontend type.
-       */
       const verificationStatus =
         scenario.verification
           ?.verification_status ??
@@ -789,14 +818,6 @@ export function useOrbitGuard() {
             selectedPlanId,
           );
 
-        /*
-         * OrbitGuardApi returns:
-         *
-         * {
-         *   approved: boolean,
-         *   isMock: boolean
-         * }
-         */
         if (!response.approved) {
           setApiError(
             'Maneuver approval was rejected or could not be confirmed by the backend.',

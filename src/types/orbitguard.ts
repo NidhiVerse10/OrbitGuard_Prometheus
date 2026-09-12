@@ -177,14 +177,6 @@ export interface Threat {
 
   threat_id?: string;
 
-  // IMPORTANT:
-  // collision_probability is NOT part of the frozen
-  // /api/threats contract.
-  //
-  // It remains optional only for compatibility with older
-  // mock/demo data. The UI must NOT require or display it.
-  collision_probability?: number;
-
   // -------------------------------------------------------
   // Frontend-only normalized fields
   // -------------------------------------------------------
@@ -206,10 +198,6 @@ export interface Threat {
   relativeVelocityKmS?: number;
 
   riskScore?: number;
-
-  // Legacy frontend alias only.
-  // Do not use this as a required backend field.
-  collisionProbability?: number;
 
   riskSeverity?: ThreatSeverity;
 

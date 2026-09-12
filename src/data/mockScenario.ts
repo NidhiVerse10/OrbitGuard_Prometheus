@@ -299,14 +299,6 @@ export const mockThreat: Threat = {
 
   riskScore: 0.91,
 
-  /*
-   * Kept only as optional legacy fallback data.
-   * It is NOT required by the backend contract.
-   */
-  collision_probability: 4.8e-3,
-
-  collisionProbability: 4.8e-3,
-
   severity: 'HIGH',
 
   riskSeverity: 'HIGH',
@@ -895,7 +887,7 @@ export const initialScenarioState: Scenario = {
 
   /*
    * IMPORTANT:
-   * The demo starts in the threat-detected state.
+   * The demo starts in the pre-evaluation state.
    * No maneuver is selected yet.
    */
   activeStepIndex: 0,
