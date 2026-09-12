@@ -19,7 +19,7 @@ from models import (
 from conjunction import detect_threats
 from maneuver import generate_candidates
 from simulator import check_candidate
-from commander import decide
+from agent_bridge import decide_via_agent_or_fallback
 
 app = FastAPI(title="OrbitGuard Backend")
 
@@ -31,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DATA_PATH = Path(__file__).parent / "data" / "mock_scenario.json"
+DATA_PATH = Path(__file__).parent.parent / "data" / "mock_scenario.json"
 
 # In-memory state (Section 2.2 - no database needed for a 24h demo)
 _state = {"objects": []}
@@ -97,7 +97,7 @@ def post_simulate(request: SimulateRequest):
 @app.post("/api/decide", response_model=DecideResponse)
 def post_decide(request: DecideRequest):
     threat = _find_threat(request.threat_id)
-    return decide(_state["objects"], threat)
+    return decide_via_agent_or_fallback(_state["objects"], threat)
 
 
 # Optional per Section 4.6 - can be frontend-only, but trivial to have here too.
