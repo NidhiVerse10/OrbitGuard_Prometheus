@@ -17,6 +17,10 @@ export const ManeuverCard: React.FC<ManeuverCardProps> = ({
   const isSelectedPlan = maneuver.status === 'SELECTED';
   const isRejected = maneuver.status === 'REJECTED';
 
+  const hasSecondaryConflicts =
+    Array.isArray(maneuver.secondary_conflicts) &&
+    maneuver.secondary_conflicts.length > 0;
+
   return (
     <div
       onClick={() => onInspect(maneuver.id)}
@@ -36,10 +40,12 @@ export const ManeuverCard: React.FC<ManeuverCardProps> = ({
           <span className="text-[10px] text-slate-500 block uppercase font-bold">
             {maneuver.id}
           </span>
+
           <span className="font-bold text-slate-200 text-xs tracking-wider">
             {maneuver.name.replace(/PLAN-\d\s*—\s*/, '')}
           </span>
         </div>
+
         <StatusBadge status={maneuver.status} />
       </div>
 
@@ -47,21 +53,31 @@ export const ManeuverCard: React.FC<ManeuverCardProps> = ({
       <div className="grid grid-cols-2 gap-2 mb-2 p-1.5 rounded bg-slate-950/70 border border-slate-800/70 text-[10px]">
         <div>
           <span className="text-slate-500 block uppercase">ΔV</span>
-          <span className="font-bold text-slate-200">{maneuver.delta_v_ms} m/s</span>
+          <span className="font-bold text-slate-200">
+            {maneuver.delta_v_ms} m/s
+          </span>
         </div>
+
         <div>
           <span className="text-slate-500 block uppercase">DELAY</span>
-          <span className="font-bold text-slate-200">{maneuver.delay_window}</span>
+          <span className="font-bold text-slate-200">
+            {maneuver.delay_window}
+          </span>
         </div>
       </div>
 
       {/* Primary & Secondary Conflicts */}
       <div className="space-y-1 text-[11px] mb-2">
         <div className="flex justify-between items-center">
-          <span className="text-slate-500 uppercase text-[10px]">PRIMARY CONFLICT:</span>
+          <span className="text-slate-500 uppercase text-[10px]">
+            PRIMARY CONFLICT:
+          </span>
+
           <span
             className={`font-bold ${
-              maneuver.primary_conflict === 'RESOLVED' ? 'text-emerald-400' : 'text-red-400'
+              maneuver.primary_conflict === 'RESOLVED'
+                ? 'text-emerald-400'
+                : 'text-red-400'
             }`}
           >
             {maneuver.primary_conflict}
@@ -70,13 +86,20 @@ export const ManeuverCard: React.FC<ManeuverCardProps> = ({
 
         {maneuver.secondary_conflicts && (
           <div className="flex justify-between items-center">
-            <span className="text-slate-500 uppercase text-[10px]">SECONDARY CONFLICTS:</span>
+            <span className="text-slate-500 uppercase text-[10px]">
+              SECONDARY CONFLICTS:
+            </span>
+
             <span
               className={`font-bold ${
-                maneuver.secondary_conflicts === 'NONE' ? 'text-emerald-400' : 'text-red-400'
+                hasSecondaryConflicts
+                  ? 'text-red-400'
+                  : 'text-emerald-400'
               }`}
             >
-              {maneuver.secondary_conflicts}
+              {hasSecondaryConflicts
+                ? maneuver.secondary_conflicts.join(', ')
+                : 'NONE'}
             </span>
           </div>
         )}
@@ -86,10 +109,13 @@ export const ManeuverCard: React.FC<ManeuverCardProps> = ({
       {maneuver.secondaryConflictDetected && (
         <div className="p-2 rounded bg-red-950/40 border border-red-800/50 mb-2 text-[10px] text-red-300 flex items-start gap-1.5">
           <AlertCircle className="w-3.5 h-3.5 text-red-400 shrink-0 mt-0.5" />
+
           <div>
             <span className="font-bold text-red-400 uppercase block text-[9px]">
-              SECONDARY CONFLICT DETECTED: {maneuver.secondary_conflicts}
+              SECONDARY CONFLICT DETECTED:{' '}
+              {maneuver.secondary_conflicts.join(', ')}
             </span>
+
             <span>{maneuver.reason}</span>
           </div>
         </div>
@@ -104,14 +130,20 @@ export const ManeuverCard: React.FC<ManeuverCardProps> = ({
               : 'text-emerald-300 border-emerald-500'
           }`}
         >
-          <span className="text-slate-500 uppercase block text-[9px]">REASON:</span>
+          <span className="text-slate-500 uppercase block text-[9px]">
+            REASON:
+          </span>
+
           {maneuver.reason}
         </div>
       )}
 
       {/* Card Action Footer */}
       <div className="flex items-center justify-between pt-1 border-t border-slate-800/60 text-[10px]">
-        <span className="text-slate-500">PROPELLANT: {maneuver.propellant_kg} kg</span>
+        <span className="text-slate-500">
+          PROPELLANT: {maneuver.propellant_kg} kg
+        </span>
+
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -120,7 +152,10 @@ export const ManeuverCard: React.FC<ManeuverCardProps> = ({
           className="flex items-center gap-1 text-cyan-400 hover:text-cyan-300 font-semibold"
         >
           <Eye className="w-3 h-3" />
-          <span>{isSelected ? 'INSPECTING' : 'VIEW TRAJECTORY'}</span>
+
+          <span>
+            {isSelected ? 'INSPECTING' : 'VIEW TRAJECTORY'}
+          </span>
         </button>
       </div>
     </div>

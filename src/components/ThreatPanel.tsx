@@ -1,114 +1,173 @@
-import React from 'react';
-import type { Threat, OrbitalObject } from '../types/orbitguard';
-import { ThreatCard } from './ThreatCard';
-import { StatusBadge } from './StatusBadge';
-import { Satellite, Radio, ShieldCheck, AlertOctagon, Info } from 'lucide-react';
+// src/components/ThreatPanel.tsx
+
+import type {
+  OrbitalObject,
+  Threat,
+} from '../types/orbitguard';
+
+import ThreatCard from './ThreatCard';
 
 interface ThreatPanelProps {
   threat: Threat;
   assets: OrbitalObject[];
-  secondarySat: OrbitalObject;
+  secondarySat?: OrbitalObject;
 }
 
-export const ThreatPanel: React.FC<ThreatPanelProps> = ({
+export default function ThreatPanel({
   threat,
   assets,
   secondarySat,
-}) => {
-  return (
-    <aside className="w-full lg:w-96 flex flex-col gap-3 p-3 bg-[#060913] border-r border-slate-800 overflow-y-auto max-h-full font-mono text-xs">
-      {/* Section Header */}
-      <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-        <div className="flex items-center gap-2 font-bold tracking-widest text-slate-300 uppercase text-xs">
-          <AlertOctagon className="w-4 h-4 text-red-500" />
-          <span>THREAT & MISSION ALERTS</span>
-        </div>
-        <span className="text-[10px] text-cyan-400 bg-slate-900 px-1.5 py-0.5 rounded border border-cyan-800/40">
-          CONJUNCTION EVENT #1
-        </span>
-      </div>
+}: ThreatPanelProps) {
+  const primaryAsset =
+    assets.find(
+      (asset) =>
+        asset.id === threat.primary_object ||
+        asset.name === threat.primary_object ||
+        String(asset.norad_id) === threat.primary_object
+    );
 
-      {/* Main Threat Conjunction Card */}
+  const secondaryAsset =
+    secondarySat ??
+    assets.find(
+      (asset) =>
+        asset.id === threat.secondary_object ||
+        asset.name === threat.secondary_object ||
+        String(asset.norad_id) === threat.secondary_object
+    );
+
+  const primaryName =
+    primaryAsset?.name ??
+    threat.primary_object ??
+    '--';
+
+  const secondaryName =
+    secondaryAsset?.name ??
+    threat.secondary_object ??
+    '--';
+
+  return (
+    <aside className="space-y-4">
+
+      {/* Active conjunction */}
       <ThreatCard threat={threat} />
 
-      {/* Primary Asset Telemetry */}
-      <div className="p-3 rounded bg-slate-900/60 border border-slate-800 text-xs">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-1.5 text-cyan-300 font-bold">
-            <Satellite className="w-3.5 h-3.5 text-cyan-400" />
-            <span>PRIMARY ASSET: {threat.primary_object}</span>
-          </div>
-          <StatusBadge status="THREATENED" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-1.5 text-[10px] text-slate-300">
-          <div className="p-1.5 rounded bg-slate-950/80 border border-slate-800/60">
-            <span className="text-slate-500 text-[8px] block uppercase">ORBIT ALTITUDE</span>
-            <span className="font-semibold text-slate-200">{threat.threatenedSat.altitude_km} km LEO</span>
-          </div>
-          <div className="p-1.5 rounded bg-slate-950/80 border border-slate-800/60">
-            <span className="text-slate-500 text-[8px] block uppercase">INCLINATION</span>
-            <span className="font-semibold text-slate-200">{threat.threatenedSat.inclination_deg}° SSO</span>
-          </div>
-          <div className="p-1.5 rounded bg-slate-950/80 border border-slate-800/60">
-            <span className="text-slate-500 text-[8px] block uppercase">ORBIT VELOCITY</span>
-            <span className="font-semibold text-slate-200">{threat.threatenedSat.velocity_km_s} km/s</span>
-          </div>
-          <div className="p-1.5 rounded bg-slate-950/80 border border-slate-800/60">
-            <span className="text-slate-500 text-[8px] block uppercase">PROPULSION BUDGET</span>
-            <span className="font-semibold text-amber-300">25.0 m/s max</span>
+      {/* Protected asset */}
+      <section className="border border-white/10 bg-[#080d14]">
+        <div className="border-b border-white/10 px-4 py-3">
+          <div className="font-mono text-xs tracking-[0.16em] text-white/60">
+            PROTECTED ASSET
           </div>
         </div>
-      </div>
 
-      {/* Sister Fleet Asset (Counterfactual Collision Risk Reference) */}
-      <div className="p-3 rounded bg-amber-950/15 border border-amber-900/40 text-xs">
-        <div className="flex items-center justify-between mb-1.5">
-          <div className="flex items-center gap-1.5 text-amber-300 font-bold">
-            <Radio className="w-3.5 h-3.5 text-amber-400" />
-            <span>SISTER ASSET: {secondarySat.name}</span>
-          </div>
-          <StatusBadge status={secondarySat.status} />
-        </div>
+        <div className="space-y-3 p-4">
 
-        <p className="text-[10px] text-slate-400 mb-2 leading-relaxed">
-          Operating in adjacent {secondarySat.altitude_km} km orbital plane. Monitored continuously by autonomous counterfactual safety checker.
-        </p>
-
-        {secondarySat.counterfactualNotice && (
-          <div className="p-2 rounded bg-black/60 border border-amber-900/40 text-[10px] text-amber-300 flex items-start gap-1.5">
-            <Info className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-400" />
-            <span>
-              <strong>COUNTERFACTUAL CHECK:</strong> {secondarySat.counterfactualNotice}
-            </span>
-          </div>
-        )}
-      </div>
-
-      {/* Fleet Constellation Overview */}
-      <div className="p-2.5 rounded bg-slate-900/40 border border-slate-800 text-[11px] mt-auto">
-        <div className="flex items-center gap-1.5 text-slate-400 mb-2 font-bold uppercase tracking-wider text-[9px]">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-          <span>CONSTELLATION EPHEMERIS TRACKING</span>
-        </div>
-        <div className="space-y-1.5">
-          {assets.map((asset) => (
-            <div
-              key={asset.id}
-              className="flex items-center justify-between p-1.5 rounded bg-slate-950/70 border border-slate-800/60"
-            >
-              <div className="flex items-center gap-1.5">
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: asset.color }}
-                />
-                <span className="text-slate-300 font-medium text-[10px]">{asset.name}</span>
-              </div>
-              <span className="text-[9px] text-slate-400">{asset.altitude_km} km</span>
+          <div>
+            <div className="font-mono text-[9px] tracking-[0.16em] text-white/35">
+              OBJECT
             </div>
-          ))}
+
+            <div className="mt-1 font-mono text-sm text-cyan-300">
+              {primaryName}
+            </div>
+          </div>
+
+          {primaryAsset?.norad_id && (
+            <div>
+              <div className="font-mono text-[9px] tracking-[0.16em] text-white/35">
+                NORAD ID
+              </div>
+
+              <div className="mt-1 font-mono text-sm">
+                {primaryAsset.norad_id}
+              </div>
+            </div>
+          )}
+
+          {typeof primaryAsset?.altitude_km === 'number' && (
+            <div>
+              <div className="font-mono text-[9px] tracking-[0.16em] text-white/35">
+                ALTITUDE
+              </div>
+
+              <div className="mt-1 font-mono text-sm">
+                {primaryAsset.altitude_km.toFixed(1)} km
+              </div>
+            </div>
+          )}
+
+          {typeof primaryAsset?.inclination_deg === 'number' && (
+            <div>
+              <div className="font-mono text-[9px] tracking-[0.16em] text-white/35">
+                INCLINATION
+              </div>
+
+              <div className="mt-1 font-mono text-sm">
+                {primaryAsset.inclination_deg.toFixed(2)}°
+              </div>
+            </div>
+          )}
+
+          {!primaryAsset && (
+            <div className="font-mono text-[10px] text-amber-300/70">
+              ASSET TELEMETRY UNAVAILABLE
+            </div>
+          )}
         </div>
-      </div>
+      </section>
+
+      {/* Conjunction object */}
+      <section className="border border-white/10 bg-[#080d14]">
+        <div className="border-b border-white/10 px-4 py-3">
+          <div className="font-mono text-xs tracking-[0.16em] text-white/60">
+            CONJUNCTION OBJECT
+          </div>
+        </div>
+
+        <div className="space-y-3 p-4">
+
+          <div>
+            <div className="font-mono text-[9px] tracking-[0.16em] text-white/35">
+              OBJECT
+            </div>
+
+            <div className="mt-1 font-mono text-sm text-amber-300">
+              {secondaryName}
+            </div>
+          </div>
+
+          {secondaryAsset?.norad_id && (
+            <div>
+              <div className="font-mono text-[9px] tracking-[0.16em] text-white/35">
+                NORAD ID
+              </div>
+
+              <div className="mt-1 font-mono text-sm">
+                {secondaryAsset.norad_id}
+              </div>
+            </div>
+          )}
+
+          {!secondaryAsset && (
+            <div className="font-mono text-[10px] text-amber-300/70">
+              OBJECT TELEMETRY UNAVAILABLE
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Tracked objects */}
+      <section className="border border-white/10 bg-[#080d14]">
+        <div className="flex items-center justify-between px-4 py-3">
+          <span className="font-mono text-[10px] tracking-[0.16em] text-white/40">
+            TRACKED OBJECTS
+          </span>
+
+          <span className="font-mono text-sm text-white">
+            {assets.length}
+          </span>
+        </div>
+      </section>
+
     </aside>
   );
-};
+}

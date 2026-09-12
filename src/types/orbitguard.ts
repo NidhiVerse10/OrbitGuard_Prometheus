@@ -1,12 +1,50 @@
-// OrbitGuard Core Types — Autonomous Multi-Agent Conjunction Response System
-// Updated for Multi-Agent Workflow: Threat Detector, Maneuver Planner, Conflict Checker,
-// Mission Guardian, Commander, and Verifier with Gemini Reasoning & Before/After Orbit Telemetry.
+// src/types/orbitguard.ts
+// OrbitGuard Core Types
+// Autonomous Multi-Agent Conjunction Response System
+//
+// Backend API is the source of truth.
+// Backend contract uses snake_case.
+// Frontend-only aliases are optional and must never be
+// required for backend integration.
 
-export type ThreatSeverity = 'CRITICAL' | 'HIGH' | 'MODERATE' | 'LOW';
+// =========================================================
+// THREAT
+// =========================================================
 
-export type ManeuverType = 'RAISE_ORBIT' | 'LOWER_ORBIT' | 'PHASE_SHIFT' | 'WAIT' | 'HOLD';
+export type ThreatSeverity =
+  | 'CRITICAL'
+  | 'HIGH'
+  | 'MODERATE'
+  | 'LOW';
 
-export type PlanStatus = 'PENDING' | 'SIMULATING' | 'REJECTED' | 'SELECTED';
+export type ThreatStatus =
+  | 'ACTIVE'
+  | 'HIGH RISK CONJUNCTION'
+  | 'ACTIVE_CONJUNCTION'
+  | 'EVALUATING'
+  | 'MITIGATED';
+
+// =========================================================
+// MANEUVER
+// =========================================================
+
+export type ManeuverType =
+  | 'RAISE_ORBIT'
+  | 'LOWER_ORBIT'
+  | 'PHASE_SHIFT'
+  | 'WAIT'
+  | 'HOLD';
+
+export type PlanStatus =
+  | 'PENDING'
+  | 'SIMULATING'
+  | 'REJECTED'
+  | 'SELECTED'
+  | 'FEASIBLE';
+
+// =========================================================
+// AGENTS
+// =========================================================
 
 export type AgentRole =
   | 'THREAT DETECTOR'
@@ -16,71 +54,180 @@ export type AgentRole =
   | 'COMMANDER'
   | 'VERIFIER';
 
+// =========================================================
+// ORBITAL GEOMETRY
+// =========================================================
+
 export interface OrbitalPoint {
   lat: number;
   lon: number;
+
+  // Frontend-normalized field
   altKm: number;
+
+  // Optional backend-compatible alias
   alt_km?: number;
 }
+
+// =========================================================
+// ORBITAL OBJECT
+// =========================================================
 
 export interface OrbitalObject {
   id: string;
   name: string;
-  norad_id?: number;
-  noradId?: number;
-  type: 'PAYLOAD' | 'DEBRIS' | 'ROCKET_BODY';
-  altitude_km: number;
-  altitudeKm: number;
-  inclination_deg: number;
-  inclinationDeg: number;
-  velocity_km_s: number;
-  velocityKmS: number;
-  current_position?: OrbitalPoint;
-  currentPosition: OrbitalPoint;
-  orbit_trajectory?: OrbitalPoint[];
-  orbitTrajectory: OrbitalPoint[];
-  color: string;
+
   shortName?: string;
+
+  type:
+    | 'PAYLOAD'
+    | 'DEBRIS'
+    | 'ROCKET_BODY';
+
+  // -------------------------------------------------------
+  // Backend orbital fields
+  // -------------------------------------------------------
+
+  norad_id?: number;
+
+  altitude_km?: number;
+
+  inclination_deg?: number;
+
+  velocity_km_s?: number;
+
+  current_position?: OrbitalPoint;
+
+  orbit_trajectory?: OrbitalPoint[];
+
+  // -------------------------------------------------------
+  // Frontend normalized aliases
+  // -------------------------------------------------------
+
+  noradId?: number;
+
+  altitudeKm?: number;
+
+  inclinationDeg?: number;
+
+  velocityKmS?: number;
+
+  currentPosition?: OrbitalPoint;
+
+  orbitTrajectory?: OrbitalPoint[];
+
+  // -------------------------------------------------------
+  // UI metadata
+  // These are frontend-only and are NOT part of the
+  // frozen backend API contract.
+  // -------------------------------------------------------
+
+  color?: string;
+
   roleLabel?: string;
+
   counterfactualNotice?: string;
+
   legendLabel?: string;
-  role?: 'PRIMARY_ASSET' | 'SECONDARY_FLEET' | 'THREAT_OBJECT' | 'BACKGROUND';
-  status: 'OPERATIONAL' | 'THREATENED' | 'SAFE' | 'CONFLICT_RISK';
+
+  role?:
+    | 'PRIMARY_ASSET'
+    | 'SECONDARY_FLEET'
+    | 'THREAT_OBJECT'
+    | 'BACKGROUND';
+
+  status?:
+    | 'OPERATIONAL'
+    | 'THREATENED'
+    | 'SAFE'
+    | 'CONFLICT_RISK';
 }
 
 // Backwards-compatible alias
 export type OrbitalAsset = OrbitalObject;
 
+// =========================================================
+// THREAT
+// =========================================================
+
 export interface Threat {
-  id: string; // THR-001
+  // -------------------------------------------------------
+  // Frozen backend /api/threats contract
+  // -------------------------------------------------------
+
+  id: string;
+
+  primary_object: string;
+
+  secondary_object: string;
+
+  tca: string;
+
+  miss_distance_km: number;
+
+  relative_velocity_km_s: number;
+
+  risk_score: number;
+
+  severity: ThreatSeverity;
+
+  // -------------------------------------------------------
+  // Optional backend identifier
+  // -------------------------------------------------------
+
   threat_id?: string;
-  primary_object: string; // SAT-03
-  secondary_object: string; // OBJECT-17 (COSMOS 2251 DEBRIS)
-  threatenedSatId: string;
-  threatenedSat: OrbitalObject;
-  threatObjectId: string;
-  threatObject: OrbitalObject;
-  tca: string; // 14:32:00 UTC
+
+  // IMPORTANT:
+  // collision_probability is NOT part of the frozen
+  // /api/threats contract.
+  //
+  // It remains optional only for compatibility with older
+  // mock/demo data. The UI must NOT require or display it.
+  collision_probability?: number;
+
+  // -------------------------------------------------------
+  // Frontend-only normalized fields
+  // -------------------------------------------------------
+
+  threatenedSatId?: string;
+
+  threatenedSat?: OrbitalObject;
+
+  threatObjectId?: string;
+
+  threatObject?: OrbitalObject;
+
   tcaUtc?: string;
+
   tcaCountdownSeconds?: number;
-  miss_distance_km: number; // 2.8 km
-  missDistanceKm: number;
-  relative_velocity_km_s: number; // 7.4 km/s
-  relativeVelocityKmS: number;
-  risk_score: number; // 0.91
-  riskScore: number;
-  collision_probability: number;
-  collisionProbability: number;
-  severity: ThreatSeverity; // HIGH
-  riskSeverity: ThreatSeverity;
-  status: 'ACTIVE' | 'HIGH RISK CONJUNCTION' | 'ACTIVE_CONJUNCTION' | 'EVALUATING' | 'MITIGATED';
+
+  missDistanceKm?: number;
+
+  relativeVelocityKmS?: number;
+
+  riskScore?: number;
+
+  // Legacy frontend alias only.
+  // Do not use this as a required backend field.
+  collisionProbability?: number;
+
+  riskSeverity?: ThreatSeverity;
+
   conjunctionPoint?: OrbitalPoint;
+
+  status?: ThreatStatus;
+
+  // -------------------------------------------------------
+  // Optional encounter geometry
+  // -------------------------------------------------------
+
   encounter_geometry?: {
     radial_miss_km: number;
     in_track_miss_km: number;
     cross_track_miss_km: number;
   };
-  encounterGeometry: {
+
+  encounterGeometry?: {
     radialMissKm: number;
     inTrackMissKm: number;
     crossTrackMissKm: number;
@@ -90,75 +237,251 @@ export interface Threat {
 // Backwards-compatible alias
 export type ConjunctionThreat = Threat;
 
-export interface ManeuverPlan {
-  id: string; // PLAN-1, PLAN-2, PLAN-3, PLAN-4
-  plan_number?: number;
-  planNumber: number;
-  name: string;
-  type: ManeuverType;
+// =========================================================
+// SECONDARY CONFLICT
+// =========================================================
+
+export interface SecondaryConflictDetail {
+  conflictSatId: string;
+
+  conflictSatName: string;
+
+  missDistanceKm: number;
+
   description: string;
+}
+
+// =========================================================
+// MANEUVER PLAN
+// =========================================================
+
+export interface ManeuverPlan {
+  // -------------------------------------------------------
+  // Frozen backend plan identity
+  // -------------------------------------------------------
+
+  id: string;
+
+  plan_number?: number;
+
+  name: string;
+
+  type: ManeuverType;
+
+  description: string;
+
   delta_v_ms: number;
-  deltaVMs: number;
-  delay_window: string; // e.g. "15 min"
-  delay?: string;
+
+  delay_window: string;
+
   propellant_kg: number;
-  propellantKg: number;
-  deltaVAcceptable: boolean;
-  primary_conflict: 'RESOLVED' | 'UNRESOLVED';
-  primaryConflictResolved: boolean;
-  secondary_conflicts: string; // "SAT-05" or "NONE"
-  secondaryConflictDetected: boolean;
-  secondaryConflictDetail?: {
-    conflictSatId: string;
-    conflictSatName: string;
-    missDistanceKm: number;
-    description: string;
-  };
-  status: PlanStatus;
-  reason: string;
+
+  primary_conflict:
+    | 'RESOLVED'
+    | 'UNRESOLVED';
+
+  /*
+   * Frozen contract:
+   *
+   * secondary_conflicts is a collection.
+   *
+   * Empty array = no secondary conflicts.
+   */
+  secondary_conflicts: string[];
+
+  // -------------------------------------------------------
+  // Optional frontend aliases
+  // -------------------------------------------------------
+
+  planNumber?: number;
+
+  deltaVMs?: number;
+
+  delay?: string;
+
+  propellantKg?: number;
+
+  deltaVAcceptable?: boolean;
+
+  primaryConflictResolved?: boolean;
+
+  /*
+   * Compatibility field only.
+   *
+   * The authoritative representation is
+   * secondary_conflicts: string[].
+   */
+  secondaryConflictDetected?: boolean;
+
+  secondaryConflictDetail?: SecondaryConflictDetail;
+
   rejectionReason?: string;
+
   selectionReason?: string;
+
   projected_trajectory?: OrbitalPoint[];
-  projectedTrajectory: OrbitalPoint[];
+
+  projectedTrajectory?: OrbitalPoint[];
+
+  status?: PlanStatus;
+
+  reason?: string;
 }
 
 // Backwards-compatible alias
 export type CandidateManeuver = ManeuverPlan;
 
+// =========================================================
+// GEMINI REASONING
+// =========================================================
+
 export interface GeminiReasoning {
   plan_id?: string;
+
   agent?: AgentRole;
+
   headline: string;
+
   text: string;
+
   confidence?: number;
+
   implication: string;
+
+  justification?: string;
 }
+
+// =========================================================
+// VERIFICATION
+// =========================================================
+
+export type VerificationStatus =
+  | 'SAFE'
+  | 'UNSAFE'
+  | 'EVALUATING';
 
 export interface VerificationResult {
   selected_plan: string;
-  primary_conflict: 'RESOLVED';
-  secondary_conflicts: 'NONE';
+
+  primary_conflict:
+    | 'RESOLVED'
+    | 'UNRESOLVED';
+
+  /*
+   * Backend normally returns a collection.
+   *
+   * "NONE" is retained only for compatibility with older
+   * demo data.
+   */
+  secondary_conflicts:
+    | string[]
+    | string;
+
   closest_approach_km: number;
-  verification_status: 'SAFE' | 'UNSAFE' | 'EVALUATING';
+
+  verification_status: VerificationStatus;
+
   verification_notes: string;
+
+  // -------------------------------------------------------
+  // Optional frontend aliases
+  // -------------------------------------------------------
+
+  status?: VerificationStatus;
+
+  reason?: string;
 }
+
+// =========================================================
+// DECISION TRACE
+// =========================================================
+
+export type DecisionStepStatus =
+  | 'QUEUED'
+  | 'RUNNING'
+  | 'COMPLETED'
+  | 'REJECTED'
+  | 'APPROVED'
+  | 'SAFE'
+
+  // Legacy/lowercase compatibility
+  | 'complete'
+  | 'active'
+  | 'queued'
+  | 'running'
+  | 'rejected'
+  | 'approved'
+  | 'safe';
 
 export interface DecisionTraceStep {
   id: string;
-  stepNumber: number;
+
+  // -------------------------------------------------------
+  // Optional numbering
+  // -------------------------------------------------------
+
+  stepNumber?: number;
+
   step_number?: number;
+
+  // -------------------------------------------------------
+  // Agent
+  // -------------------------------------------------------
+
   agent: AgentRole;
-  timestamp: string;
+
+  timestamp?: string;
+
   title: string;
-  status: 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'REJECTED' | 'APPROVED' | 'SAFE';
-  explanation: string;
+
+  status: DecisionStepStatus;
+
+  // -------------------------------------------------------
+  // Explanation
+  // -------------------------------------------------------
+
+  explanation?: string;
+
+  detail?: string;
+
+  // -------------------------------------------------------
+  // Plan association
+  // -------------------------------------------------------
+
   planId?: string;
+
   planName?: string;
+
+  // -------------------------------------------------------
+  // Gemini reasoning
+  // -------------------------------------------------------
+
   gemini_reasoning?: GeminiReasoning;
-  keyValues?: { label: string; value: string; highlight?: 'good' | 'bad' | 'neutral' }[];
+
+  // -------------------------------------------------------
+  // Optional key-value telemetry
+  // -------------------------------------------------------
+
+  keyValues?: Array<{
+    label: string;
+
+    value: string;
+
+    highlight?:
+      | 'good'
+      | 'bad'
+      | 'neutral';
+  }>;
+
+  // -------------------------------------------------------
+  // Counterfactual explanation
+  // -------------------------------------------------------
+
   counterfactual?: {
     testedSolution: string;
+
     discoveredProblem: string;
+
     autonomousAction: string;
   };
 }
@@ -166,48 +489,166 @@ export interface DecisionTraceStep {
 // Backwards-compatible alias
 export type DecisionStep = DecisionTraceStep;
 
+// =========================================================
+// SIMULATION
+// =========================================================
+
 export interface SimulationResult {
-  plan_id: string;
-  primary_conflict_resolved: boolean;
-  secondary_conflict_detected: boolean;
+  // Backend traceability
+  plan_id?: string;
+
+  // -------------------------------------------------------
+  // Primary conflict
+  // -------------------------------------------------------
+
+  primary_resolved?: boolean;
+
+  primary_conflict_resolved?: boolean;
+
+  // -------------------------------------------------------
+  // Secondary conflicts
+  // -------------------------------------------------------
+
+  secondary_conflicts?: string[];
+
+  secondary_conflict_detected?: boolean;
+
   secondary_conflict_object?: string;
-  delta_v_acceptable: boolean;
-  status: 'REJECTED' | 'FEASIBLE' | 'SELECTED';
+
+  // -------------------------------------------------------
+  // Simulation metrics
+  // -------------------------------------------------------
+
+  closest_approach_km?: number;
+
+  feasible?: boolean;
+
+  delta_v_acceptable?: boolean;
+
+  // -------------------------------------------------------
+  // Simulation status
+  // -------------------------------------------------------
+
+  status:
+    | 'SAFE'
+    | 'UNSAFE'
+    | 'REJECTED'
+    | 'FEASIBLE'
+    | 'SELECTED';
+
   reason: string;
+
+  // -------------------------------------------------------
+  // Optional projected trajectory
+  // -------------------------------------------------------
+
   trajectory?: OrbitalPoint[];
 }
 
+// =========================================================
+// SCENARIO
+// =========================================================
+
 export interface Scenario {
+  // -------------------------------------------------------
+  // Core scenario data
+  // -------------------------------------------------------
+
   threat: Threat;
+
   assets: OrbitalObject[];
+
+  /*
+   * Optional aliases used by some frontend components.
+   */
   objects?: OrbitalObject[];
-  secondaryConflictSat: OrbitalObject;
+
+  secondaryConflictSat?: OrbitalObject;
+
   secondary_conflict_sat?: OrbitalObject;
+
+  // -------------------------------------------------------
+  // Candidate plans
+  // -------------------------------------------------------
+
   candidateManeuvers: ManeuverPlan[];
+
   candidate_plans?: ManeuverPlan[];
+
+  // -------------------------------------------------------
+  // Decision trace
+  // -------------------------------------------------------
+
   decisionSteps: DecisionTraceStep[];
+
   decision_trace?: DecisionTraceStep[];
+
+  // -------------------------------------------------------
+  // Evaluation state
+  // -------------------------------------------------------
+
   activeStepIndex: number;
+
   selectedPlanId: string | null;
+
   activeInspectionPlanId: string | null;
+
   geminiReasoning: GeminiReasoning | null;
+
   verification: VerificationResult;
+
   isEvaluating: boolean;
+
   isEvaluationComplete: boolean;
+
+  // -------------------------------------------------------
+  // Human approval
+  // -------------------------------------------------------
+
   operatorApproved: boolean;
+
   operatorApprovalTime?: string;
+
   operatorNotes?: string;
-  visualizationMode: 'BEFORE' | 'AFTER';
+
+  // -------------------------------------------------------
+  // Visualization
+  // -------------------------------------------------------
+
+  visualizationMode:
+    | 'BEFORE'
+    | 'AFTER';
+
   beforeTrajectory: OrbitalPoint[];
+
   afterTrajectory: OrbitalPoint[];
+
+  // -------------------------------------------------------
+  // Decision metadata
+  // -------------------------------------------------------
+
+  planScores?: Record<string, number>;
+
+  rejectedPlans?: ManeuverPlan[];
+
+  requiresHumanApproval?: boolean;
+
+  requires_human_approval?: boolean;
 }
 
 // Backwards-compatible alias
 export type ScenarioState = Scenario;
 
+// =========================================================
+// GENERIC API RESPONSE
+// =========================================================
+
 export interface ApiResponse<T> {
   success: boolean;
+
   data: T;
+
   message?: string;
+
   timestamp: string;
 }
