@@ -731,7 +731,7 @@ export const OrbitGuardApi = {
    *
    * {
    *   "threat_id": "...",
-   *   "maneuver_id": "..."
+   *   "plan_id": "..."
    * }
    */
   async approveManeuver(
@@ -756,8 +756,13 @@ export const OrbitGuardApi = {
             method: 'POST',
 
             body: JSON.stringify({
+              /*
+               * IMPORTANT:
+               * Backend approval contract uses `plan_id`,
+               * not `maneuver_id`.
+               */
               threat_id: threatId,
-              maneuver_id: maneuverId,
+              plan_id: maneuverId,
             }),
           },
         );
