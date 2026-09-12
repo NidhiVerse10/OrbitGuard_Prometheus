@@ -119,5 +119,6 @@ class AgentOrchestrator:
             "scores": scores_payload,
             "rejected_plans": rejected_plans,
             "justification": justification,
-            "verification": verification_payload
+            "verification": verification_payload,
+            "requires_human_approval": True
         }

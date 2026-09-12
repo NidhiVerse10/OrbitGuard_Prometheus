@@ -28,3 +28,4 @@ class DecisionOutput(BaseModel):
     rejected_plans: List[dict]
     justification: str
     verification: VerificationResult
+    requires_human_approval: bool = True
