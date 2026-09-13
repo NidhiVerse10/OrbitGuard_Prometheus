@@ -7,7 +7,7 @@
 
 ###  [Live Demo](https://orbitguard-prometheus-frontend.onrender.com/)
 
-> Hosted on Render's free tier — the backend spins down when idle, so the first load after inactivity can take 30–60 seconds to wake up. Give it a moment.
+> Hosted on Render's free tier , the backend spins down when idle, so the first load after inactivity can take 30–60 seconds to wake up. Give it a moment.
 
 ---
 
