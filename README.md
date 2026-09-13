@@ -57,9 +57,9 @@ flowchart LR
 
 | Agent | Deterministic Python | Gemini's role |
 |---|---|---|
-| **Threat Detector** | 100% — propagation, distance search, risk formula | None |
+| **Threat Detector** | 100%  propagation, distance search, risk formula | None |
 | **Maneuver Planner** | Computes the physical result of each candidate | Optional: comments on candidate ordering |
-| **Conflict Checker** | 100% — re-simulates every candidate against every object | None |
+| **Conflict Checker** | 100%  re-simulates every candidate against every object | None |
 | **Mission Guardian** | Criticality weighting lookup | Explains why criticality changed the ranking |
 | **Commander** | Final weighted score (deterministic formula) | Writes the human-readable justification |
 | **Verifier** | Re-runs Conflict Checker once on the selected plan | Optionally narrates the result |
